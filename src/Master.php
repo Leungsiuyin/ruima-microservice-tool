@@ -2,7 +2,7 @@
 
 namespace MicroserviceTool;
 
-class Index {
+class Master {
   public static function test ()
   {
     # code...
