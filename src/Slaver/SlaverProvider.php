@@ -1,11 +1,11 @@
 <?php
 
-namespace MicroserviceTool;
+namespace MicroserviceTool\Provider;
 
 // use App\Models\User;
 use Illuminate\Support\ServiceProvider;
 
-class AuthServiceProvider extends ServiceProvider
+class SlaverProvider extends ServiceProvider
 {
     /**
      * Register any application services.
