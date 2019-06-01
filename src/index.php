@@ -3,7 +3,7 @@
 namespace MicroserviceTool;
 
 class Index {
-  public function test ()
+  public static function test ()
   {
     # code...
     echo 'hello word';
