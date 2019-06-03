@@ -1,6 +1,6 @@
 <?php
 
-namespace MicroserviceTool\Controllers;
+namespace Ruima\MicroserviceTool\Controllers;
 use Psr\Http\Message\ServerRequestInterface;
 
 class SalverController {
@@ -8,6 +8,6 @@ class SalverController {
     public function healthCheck(ServerRequestInterface $request)
     {
         # code...
-        
+        return response()->json(app('MicroserviceTool')->getSlaverInfo());
     }
 }

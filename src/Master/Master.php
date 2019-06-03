@@ -1,6 +1,6 @@
 <?php
 
-namespace MicroserviceTool;
+namespace Ruima\MicroserviceTool;
 
 class Master {
   public static function test ()

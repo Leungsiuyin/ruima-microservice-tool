@@ -1,6 +1,6 @@
 <?php
 
-namespace MicroserviceTool\Provider;
+namespace Ruima\MicroserviceTool\Provider;
 
 // use App\Models\User;
 use Illuminate\Support\ServiceProvider;
