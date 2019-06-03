@@ -50,6 +50,6 @@ class RouteRegistrar
     public function healthCheck()
     {
       # code...
-      $this->router->a('/health-check', $this->prefix('SalverController@healthCheck'));
+      $this->router->get('/health-check', $this->prefix('SalverController@healthCheck'));
     }
 }

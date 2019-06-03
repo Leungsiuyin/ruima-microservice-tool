@@ -1,6 +1,7 @@
 <?php
 
 namespace Ruima\MicroserviceTool;
+use Laravel\Lumen\Application;
 
 class Slaver {
 
@@ -14,9 +15,9 @@ class Slaver {
     /**
      * Slaver constructor.
      */
-    public function __construct($name, $type, $url, $description = '', $version = '', Array $route = null)
+    public function __construct($app)
     {
-      
+        $route = $app->router->getRoutes();
         $route_list = array_map( function ($el) {
             $el['reg'] = preg_replace('/\/\{(\w+?)\}/', '/\w+', $el['uri'], -1, $el['params']);
 
@@ -25,11 +26,11 @@ class Slaver {
             unset($el['action']);
             return $el;
         }, $route);
-        $this->name = $name;
-        $this->type = $type;
-        $this->description = $description;
-        $this->version = $version;
-        $this->url = $url;
+        $this->name = env('MICROSERVICE_NAME');
+        $this->type = env('MICROSERVICE_TYPE');
+        $this->description = env('MICROSERVICE_DESCRIPTION', '');
+        $this->version = env('MICROSERVICE_VERSION', $app->version());
+        $this->url = $_SERVER['SERVER_NAME'];
         $this->route = $route_list;
     }
 
