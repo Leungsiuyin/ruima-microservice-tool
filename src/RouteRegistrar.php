@@ -38,7 +38,7 @@ class RouteRegistrar
     }
 
     /**
-     * Register routes for master+
+     * Register routes for master
      *
      * @return void
      */

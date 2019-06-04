@@ -2,6 +2,8 @@
 
 namespace Ruima\MicroserviceTool;
 use Laravel\Lumen\Application;
+use GuzzleHttp\Client;
+use Ruima\MicroserviceTool\Console\Commands\HeartBeat;
 
 class Slaver {
 
@@ -11,6 +13,7 @@ class Slaver {
     public $version;
     public $url;
     public $route = [];
+    static $conf_path = __DIR__.'/MicroServer.json';
 
     /**
      * Slaver constructor.
@@ -35,6 +38,12 @@ class Slaver {
         $this->route = $route_list;
     }
 
+    /**
+     * @Descripttion: 获取当前微服务各项参数
+     * @Author: LeungYin
+     * @param {type} 
+     * @return: 
+     */
     public function getSlaverInfo()
     {
         # code...
@@ -48,6 +57,12 @@ class Slaver {
         ];
     }
 
+    /**
+     * @Descripttion: 预设向微服务发起销毁网关缓存的用户信息的方法
+     * @Author: LeungYin
+     * @param {type} 
+     * @return: 
+     */
     public function destoryAuth($sort_token = null, $gateway_url = null)
     {
         # code...
@@ -72,6 +87,12 @@ class Slaver {
         return response($result, $response->getStatusCode());
     }
 
+    /**
+     * @Descripttion: 为微服务注册预设路由的方法
+     * @Author: LeungYin
+     * @param {type} 
+     * @return: 
+     */
     public static function routes($callback = null, array $options = [])
     {
       # code...
@@ -96,4 +117,90 @@ class Slaver {
 
     }
 
+    /**
+     * @Descripttion: 根据传入微服务名获取对应的url返回
+     * @Author: LeungYin
+     * @param {type} 
+     * @return: String $url
+     */
+    public function getServerUrl(String $service_name)
+    {
+        # code...
+        $service_list = json_decode(file_get_contents(self::$conf_path), true);
+        if (isset($service_list[$service_name])) {
+            return $service_list[$service_name];
+        } else {
+            $service_list = HeartBeat::handle();
+            if (isset($service_list[$service_name])) {
+                file_put_contents(self::$conf_path, $service_list);
+                return $service_list[$service_name];
+            } else {
+                throw new \Exception('can not find server!');
+            }
+        }
+
+    }
+
+    /** 对外提供请求方法的基础方法
+     * @Descripttion: 
+     * @Author: LeungYin
+     * @param {type} 
+     * @return: 
+     */
+    private function request(String $method, String $url, Array $guzzle_config)
+    {
+        # code...
+        $http = new Client();
+        $response = $http->request($method, $url, $guzzle_config);
+        return json_decode((string) $response->getBody(), true);
+    }
+
+    /**
+     * @Descripttion: 对外提供get接口，传入目标微服务名，请求路由，设置参数。由于底层使用Guzzle，设置参数可参考Guzzle文档。
+     * @Author: LeungYin
+     * @param {type} 
+     * @return: 
+     */
+    public function get(String $service_name, String $url, Array $guzzle_config)
+    {
+        # code...
+        $target_url = $this->getServerUrl($service_name);
+        return $this->request('GET', $target_url.$url, $guzzle_config);
+    }
+
+    /**
+     * @Descripttion: 对外提供post接口，传入目标微服务名，请求路由，设置参数。由于底层使用Guzzle，设置参数可参考Guzzle文档。
+     * @Author: LeungYin
+     * @param {type} 
+     * @return: 
+     */
+    public function post(String $service_name, String $url, Array $guzzle_config)
+    {
+        $target_url = $this->getServerUrl($service_name);
+        return $this->request('POST', $target_url.$url, $guzzle_config);
+    }
+
+    /**
+     * @Descripttion: 对外提供delete接口，传入目标微服务名，请求路由，设置参数。由于底层使用Guzzle，设置参数可参考Guzzle文档。
+     * @Author: LeungYin
+     * @param {type} 
+     * @return: 
+     */
+    public function delete(String $service_name, String $url, Array $guzzle_config)
+    {
+        $target_url = $this->getServerUrl($service_name);
+        return $this->request("DELETE", $target_url.$url, $guzzle_config);
+    }
+
+    /**
+     * @Descripttion: 对外提供put接口，传入目标微服务名，请求路由，设置参数。由于底层使用Guzzle，设置参数可参考Guzzle文档。
+     * @Author: LeungYin
+     * @param {type} 
+     * @return: 
+     */
+    public function put(String $service_name, String $url, Array $guzzle_config)
+    {
+        $target_url = $this->getServerUrl($service_name);
+        return $this->request('PUT', $target_url.$url, $guzzle_config);
+    }
 }
