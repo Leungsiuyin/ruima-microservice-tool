@@ -31,7 +31,7 @@ class Slaver {
         $this->type = env('MICROSERVICE_TYPE');
         $this->description = env('MICROSERVICE_DESCRIPTION', '');
         $this->version = env('MICROSERVICE_VERSION', $app->version());
-        $this->url = $_SERVER['SERVER_NAME'];
+        $this->url = $_SERVER['SERVER_NAME'] ?? env('APP_URL');
         $this->route = $route_list;
     }
 

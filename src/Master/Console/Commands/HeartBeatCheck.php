@@ -3,7 +3,7 @@ namespace Ruima\MicroserviceTool\Console\Commands;
 
 use GuzzleHttp\Client;
 
-class HeartBeat
+class HeartBeatCheck
 {
 
     /**Create a new command instance.

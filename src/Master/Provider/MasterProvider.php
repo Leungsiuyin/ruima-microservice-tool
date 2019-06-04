@@ -5,10 +5,10 @@ namespace Ruima\MicroserviceTool\Provider;
 // use App\Models\User;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Console\Scheduling\Schedule;
-use Ruima\MicroserviceTool\Slaver;
-use Ruima\MicroserviceTool\Console\Commands\HeartBeat;
+use Ruima\MicroserviceTool\Master;
+use Ruima\MicroserviceTool\Console\Commands\HeartBeatCheck;
 
-class SlaverProvider extends ServiceProvider
+class MasterProvider extends ServiceProvider
 {
     /**
      * Register any application services.
@@ -28,17 +28,18 @@ class SlaverProvider extends ServiceProvider
     public function boot()
     {
 
-        Slaver::routes($this->app->router);# 注册Slaver相关路由
+        Master::routes($this->app->router);# 注册Slaver相关路由
 
-        #添加heart beat
+        #添加heart beat check
         $schedule = $this->app->make(Schedule::class);
+        // $schedule->command('some:command')->everyMinute();
         $schedule->call(function () {
-            HeartBeat::handle();
+            HeartBeatCheck::handle();
         })
         ->everyFifteenMinutes()
         // ->everyMinute()
         ->runInBackground()
-        ->name('heart_beat')
+        ->name('heart_beat_check')
         ->withoutOverlapping();
     }
 }

@@ -34,6 +34,7 @@ class RouteRegistrar
     public function all()
     {
         $this->healthCheck();
+        $this->heartBeat();
     }
 
     /**
@@ -51,5 +52,11 @@ class RouteRegistrar
     {
       # code...
       $this->router->get('/health-check', $this->prefix('SalverController@healthCheck'));
+    }
+
+    public function heartBeat()
+    {
+      # code...
+      $this->router->get('/heart-beat', $this->prefix('SalverController@heartBeat'));
     }
 }
