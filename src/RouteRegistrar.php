@@ -27,14 +27,25 @@ class RouteRegistrar
     }
 
     /**
-     * Register routes for transient tokens, clients, and personal access tokens.
+     * Register routes for slaver
      *
      * @return void
      */
-    public function all()
+    public function slaver()
     {
         $this->healthCheck();
         $this->heartBeat();
+    }
+
+    /**
+     * Register routes for master+
+     *
+     * @return void
+     */
+    public function master()
+    {
+        // $this->healthCheck();
+        // $this->heartBeat();
     }
 
     /**

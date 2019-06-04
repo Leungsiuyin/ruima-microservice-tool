@@ -91,7 +91,7 @@ class Slaver {
 
       $callback->group(array_except($options, ['namespace']), function ($router) use ($callback, $options) {
           $routes = new RouteRegistrar($router, $options);
-          $routes->all();
+          $routes->slaver();
       });
 
     }
