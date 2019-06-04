@@ -17,6 +17,7 @@ class Slaver {
      */
     public function __construct($app)
     {
+        // dd($app);
         $route = $app->router->getRoutes();
         $route_list = array_map( function ($el) {
             $el['reg'] = preg_replace('/\/\{(\w+?)\}/', '/\w+', $el['uri'], -1, $el['params']);
@@ -71,7 +72,7 @@ class Slaver {
         return response($result, $response->getStatusCode());
     }
 
-    public function routes($callback = null, array $options = [])
+    public static function routes($callback = null, array $options = [])
     {
       # code...
       
@@ -83,7 +84,7 @@ class Slaver {
 
       $defaultOptions = [
           // 'prefix' => 'oauth',
-          'namespace' => '\MicroserviceTool\Controllers',
+          'namespace' => 'Ruima\MicroserviceTool\Controllers',
       ];
 
       $options = array_merge($defaultOptions, $options);
