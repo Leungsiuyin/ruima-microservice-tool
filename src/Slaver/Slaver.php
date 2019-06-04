@@ -151,8 +151,9 @@ class Slaver {
     {
         # code...
         $http = new Client();
+        $guzzle_config['http_errors'] = false;
         $response = $http->request($method, $url, $guzzle_config);
-        return json_decode((string) $response->getBody(), true);
+        return response($response->getBody(), $response->getStatusCode());
     }
 
     /**
@@ -161,7 +162,7 @@ class Slaver {
      * @param {type} 
      * @return: 
      */
-    public function get(String $service_name, String $url, Array $guzzle_config)
+    public function get(String $service_name, String $url = '/', Array $guzzle_config = [])
     {
         # code...
         $target_url = $this->getServerUrl($service_name);
@@ -174,7 +175,7 @@ class Slaver {
      * @param {type} 
      * @return: 
      */
-    public function post(String $service_name, String $url, Array $guzzle_config)
+    public function post(String $service_name, String $url = '/', Array $guzzle_config = [])
     {
         $target_url = $this->getServerUrl($service_name);
         return $this->request('POST', $target_url.$url, $guzzle_config);
@@ -186,7 +187,7 @@ class Slaver {
      * @param {type} 
      * @return: 
      */
-    public function delete(String $service_name, String $url, Array $guzzle_config)
+    public function delete(String $service_name, String $url = '/', Array $guzzle_config = [])
     {
         $target_url = $this->getServerUrl($service_name);
         return $this->request("DELETE", $target_url.$url, $guzzle_config);
@@ -198,7 +199,7 @@ class Slaver {
      * @param {type} 
      * @return: 
      */
-    public function put(String $service_name, String $url, Array $guzzle_config)
+    public function put(String $service_name, String $url = '/', Array $guzzle_config = [])
     {
         $target_url = $this->getServerUrl($service_name);
         return $this->request('PUT', $target_url.$url, $guzzle_config);
