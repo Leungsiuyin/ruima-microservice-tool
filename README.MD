@@ -20,7 +20,7 @@ Or if you prefer, edit `composer.json` manually:
 ```json
 {
     "require": {
-        "ruima/microservice-tool": "^0.0.5"
+        "ruima/microservice-tool": "^0.0.6"
     }
 }
 ```
