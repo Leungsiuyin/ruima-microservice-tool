@@ -17,6 +17,6 @@ class SalverController {
     public function heartBeat()
     {
         # code...
-        return response()->json(HeartBeat::handle());
+        return HeartBeat::handle();
     }
 }

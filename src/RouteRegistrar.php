@@ -44,8 +44,11 @@ class RouteRegistrar
      */
     public function master()
     {
-        // $this->healthCheck();
-        // $this->heartBeat();
+        $this->healthCheckMaster();
+        $this->heartBeatMaster();
+        $this->registerMicroserver();
+        $this->distroyAuth();
+        $this->distribute();
     }
 
     /**
@@ -69,5 +72,40 @@ class RouteRegistrar
     {
       # code...
       $this->router->get('/heart-beat', $this->prefix('SalverController@heartBeat'));
+    }
+
+    public function healthCheckMaster()
+    {
+      # code...
+      $this->router->get('/health-check', $this->prefix('MasterController@healthCheck'));
+    }
+
+    public function heartBeatMaster()
+    {
+      # code...
+      $this->router->get('/heart-beat-check', $this->prefix('MasterController@heartBeatCheck'));
+    }
+
+    public function registerMicroserver()
+    {
+      # code...
+      $this->router->post('/register-microserver', $this->prefix('MasterController@registerMicroserver'));
+    }
+
+    public function distroyAuth()
+    {
+      # code...
+      $this->router->delete('/distroy-auth', $this->prefix('MasterController@distroyAuth'));
+    }
+    
+    public function distribute()
+    {
+      # code...
+      $this->router->get('{path:.*}', $this->prefix('MasterController@distribute'));
+      $this->router->post('{path:.*}', $this->prefix('MasterController@distribute'));
+      $this->router->put('{path:.*}', $this->prefix('MasterController@distribute'));
+      $this->router->patch('{path:.*}', $this->prefix('MasterController@distribute'));
+      $this->router->delete('{path:.*}', $this->prefix('MasterController@distribute'));
+      $this->router->options('{path:.*}', $this->prefix('MasterController@distribute'));
     }
 }

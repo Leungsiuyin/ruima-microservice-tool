@@ -10,6 +10,10 @@ use Ruima\MicroserviceTool\Console\Commands\HeartBeatCheck;
 
 class MasterProvider extends ServiceProvider
 {
+    protected $commands = [
+        HeartBeatCheck::class,
+    ];
+
     /**
      * Register any application services.
      *
@@ -18,6 +22,7 @@ class MasterProvider extends ServiceProvider
     public function register()
     {
         //
+        $this->commands($this->commands);
     }
 
     /**
@@ -33,10 +38,8 @@ class MasterProvider extends ServiceProvider
         #添加heart beat check
         $schedule = $this->app->make(Schedule::class);
         // $schedule->command('some:command')->everyMinute();
-        $schedule->call(function () {
-            HeartBeatCheck::handle();
-        })
-        ->everyFifteenMinutes()
+        $schedule->command(HeartBeatCheck::class)
+        ->everyFiveMinutes()
         // ->everyMinute()
         ->runInBackground()
         ->name('heart_beat_check')

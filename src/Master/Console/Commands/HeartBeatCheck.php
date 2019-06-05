@@ -1,10 +1,24 @@
 <?php
 namespace Ruima\MicroserviceTool\Console\Commands;
 
-use GuzzleHttp\Client;
+use \Carbon\Carbon;
+use Ruima\MicroserviceTool\Services\MicroserverConfigService;
 
 class HeartBeatCheck
 {
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'microserver:heart-beat-check';
+
+    /**
+     * The console command description.
+     *
+     * @var string roll something back to somewhere
+     */
+    protected $description = 'check the mircroserver info in gateway';
 
     /**Create a new command instance.
      * HealthCheck constructor.
@@ -13,8 +27,6 @@ class HeartBeatCheck
     public function __construct()
     {
         parent::__construct();
-        // $this->MicroserverConfigService = new MicroserverConfigService();
-        // self::handle();
     }
 
     /**
@@ -25,11 +37,36 @@ class HeartBeatCheck
     public static function handle()
     {
         # code...
-        $http = new Client();
-        $data = app('MicroserviceTool')->getSlaverInfo();
-        $url = env('MICROSERVICE_GATEWAY_URL');
-        $response = $http->post($url.'/', []);
-        return $response->getBody();
-        
+        $conf = MicroserverConfigService::loadMircoserviceConfig(true);
+        if (!$conf) {
+            //TODO 读取配置文件失败
+        }
+        // 对数据微服务进行检查
+        if (!isset($conf['update_at'])) {
+            $conf['update_at'] = Carbon::now();
+        }
+        $last_check_time = Carbon::create($conf['update_at']) ;
+        foreach (['base_service', 'data_service'] as $service_type) {
+            # code...
+            foreach ($conf[$service_type] as $key => &$value) {
+                # code...
+                if (!isset($value['update_at'])) {
+                    $value['update_at'] = Carbon::now();
+                }
+                $last_beat_time = Carbon::create($value['update_at']) ;
+                $diff = $last_beat_time->diffInMinutes($last_check_time);
+                if ($diff < -5) {
+                    $value['status'] = 'inactive';
+                    $value['route_list'] = [];
+                }
+            }
+        }
+        $conf['update_at'] = Carbon::now()->toDateTimeString();
+
+        if (MicroserverConfigService::setMircoserviceConfig(json_encode($conf))) {
+            // TODO write conf success
+            return $conf;
+        }
+        // TODO write conf fail
     }
 }

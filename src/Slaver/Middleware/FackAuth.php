@@ -17,9 +17,11 @@ class FackAuth
     {
         try {
             //code...
-            if (is_null(json_decode($request->input('user'), true))) {
+            $res = json_decode($request->input('user'), true);
+            if (is_null($res)) {
                 throw new \Exception('Unauthorized.');
             }
+            $request->auth = $res;
           } catch (\Throwable $th) {
             //throw $th;
             return response('Unauthorized.', 401);

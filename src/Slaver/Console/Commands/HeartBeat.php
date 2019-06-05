@@ -5,6 +5,19 @@ use GuzzleHttp\Client;
 
 class HeartBeat
 {
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'microserver:heart-beat';
+
+    /**
+     * The console command description.
+     *
+     * @var string roll something back to somewhere
+     */
+    protected $description = 'send the mircroserver info to gateway';
 
     static $conf_path = __DIR__.'/../../MicroServer.json';
     
@@ -15,8 +28,6 @@ class HeartBeat
     public function __construct()
     {
         parent::__construct();
-        // $this->MicroserverConfigService = new MicroserverConfigService();
-        // self::handle();
     }
 
     /**
@@ -30,17 +41,12 @@ class HeartBeat
         $http = new Client();
         $data = app('MicroserviceTool')->getSlaverInfo();
         $url = env('MICROSERVICE_GATEWAY_URL');
-        $response = $http->post($url.'/registe-microserver', [
+        $response = $http->post($url.'/register-microserver', [
             'json' => $data
         ]);
-        // $code = $response->getStatusCode();
-        // $reason = $response->getReasonPhrase();
         $body = $response->getBody();
         file_put_contents(self::$conf_path, $body);
-        // dd(json_decode(file_get_contents(self::$conf_path), true));
         return $body;
-        // return response()->json(json_decode($response->getBody(), true));
-        // return response()->json($data);
         
     }
 }

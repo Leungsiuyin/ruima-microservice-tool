@@ -10,6 +10,11 @@ use Ruima\MicroserviceTool\Console\Commands\HeartBeat;
 
 class SlaverProvider extends ServiceProvider
 {
+
+    protected $commands = [
+        HeartBeat::class,
+    ];
+
     /**
      * Register any application services.
      *
@@ -18,6 +23,7 @@ class SlaverProvider extends ServiceProvider
     public function register()
     {
         //
+        $this->commands($this->commands);
     }
 
     /**
@@ -32,13 +38,11 @@ class SlaverProvider extends ServiceProvider
 
         #添加heart beat
         $schedule = $this->app->make(Schedule::class);
-        $schedule->call(function () {
-            HeartBeat::handle();
-        })
-        ->everyFifteenMinutes()
-        // ->everyMinute()
-        ->runInBackground()
-        ->name('heart_beat')
-        ->withoutOverlapping();
+        $schedule->command(HeartBeat::class)
+            ->everyFiveMinutes()
+            // ->everyMinute()
+            ->runInBackground()
+            ->name('heart_beat')
+            ->withoutOverlapping();
     }
 }

@@ -1,12 +1,15 @@
 # Ruima Microserver Framework base on Lumen
 
 This is a microserver framework that make it easy to build a microserver API server.
+The gateway will cache the user auth info (base info, roles info, premissions info) in redis.
 
 
 ## Dependencies
 * PHP >= 7.1.3
 * Lumen >= 5.8
 * Guzzle >= 6.3
+* illuminate/redis >= 5.8
+* predis/predis >= 1.1
 
 ## Installation via Composer
 ```bash
@@ -17,9 +20,43 @@ Or if you prefer, edit `composer.json` manually:
 ```json
 {
     "require": {
-        "ruima/microservice-tool": "^0.0.2"
+        "ruima/microservice-tool": "^0.0.3"
     }
 }
+```
+
+### Starting The Scheduler
+you need to add the following Cron entry to your server.
+```
+* * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
+```
+
+### Modify the service environment (```.env``` file)
+#### For Microservice:
+```
+# (Require) the url of this service
+APP_URL=http://your.app.url
+
+# (Require) the url of gateway
+MICROSERVICE_GATEWAY_URL = http://your.gateway.url
+
+# (Require) the name of this microservice
+MICROSERVICE_NAME = micro-data
+
+# (Require) the type of this microservice "{base service} (.e.g auth) | data"
+MICROSERVICE_TYPE = data
+
+# (Not Require) the description of this microservice
+MICROSERVICE_DESCRIPTION = 数据微服务Demo
+
+# (Not Require) the version of this microservice, default return lumen's version
+MICROSERVICE_VERSION = ''
+```
+
+#### For Gateway:
+```
+# (Not Require) custom the microservices config list dir 
+MICROSERVICE_CONFIG_DIR = /absolute/path/to/your/config/dir
 ```
 
 ### Modify the bootstrap flow (```bootstrap/app.php``` file)
@@ -32,14 +69,16 @@ $app->singleton(
 );
 
 $app->routeMiddleware([
-    'auth' => Ruima\MicroserviceTool\FackAuth::class,
+    'auth' => Ruima\MicroserviceTool\Middleware\FackAuth::class,
 ]);
 
 $app->register(Ruima\MicroserviceTool\Provider\SlaverProvider::class);
 ```
 
-#### For Gateway: (Comming soon)
-
+#### For Gateway: 
+``` php
+$app->register(Ruima\MicroserviceTool\Provider\MasterProvider::class);
+```
 
 ### Installed routes
 #### For Microservice:
@@ -48,9 +87,31 @@ Verb | Path | Controller | Action
 GET | /health-check | \Ruima\MicroserviceTool\Controllers\SalverController | healthCheck
 GET | /heart-beat | \Ruima\MicroserviceTool\Controllers\SalverController | heartBeat
 
+#### For Gateway: 
+Verb | Path | Controller | Action
+--- | --- | --- | ---
+GET | /health-check | \Ruima\MicroserviceTool\Controllers\MasterController | healthCheck
+GET | /heart-beat-check | \Ruima\MicroserviceTool\Controllers\MasterController | heartBeatCheck
+GET | /registe-microserver | \Ruima\MicroserviceTool\Controllers\MasterController | healthCheck
+POST | /distroy-auth | \Ruima\MicroserviceTool\Controllers\MasterController | registerMicroserver
+DELETE | /health-check | \Ruima\MicroserviceTool\Controllers\MasterController | distroyAuthToken
+GET | {path:.*} | \Ruima\MicroserviceTool\Controllers\MasterController | distribute
+POST | {path:.*} | \Ruima\MicroserviceTool\Controllers\MasterController | distribute
+PUT | {path:.*} | \Ruima\MicroserviceTool\Controllers\MasterController | distribute
+PATCH | {path:.*} | \Ruima\MicroserviceTool\Controllers\MasterController | distribute
+DELETE | {path:.*} | \Ruima\MicroserviceTool\Controllers\MasterController | distribute
+OPTIONS | {path:.*} | \Ruima\MicroserviceTool\Controllers\MasterController | distribute
 
+### Installed schedules & commandsdules
+#### For Microservice:
+cycle | Command | description
+--- | --- | --- 
+5MIN | microserver:heart-beat | send the microservice info to gateway
 
-#### For Gateway: (Comming soon)
+#### For Gateway: 
+cycle | Command | description
+--- | --- | --- 
+5MIN | microserver:heart-beat-check | check the info in gateway
 
 ### Installed methods
 #### For Microservice:
@@ -58,7 +119,7 @@ GET | /heart-beat | \Ruima\MicroserviceTool\Controllers\SalverController | heart
 #use app('MicroserviceTool') to get the MicroserviceTool Object
 app('MicroserviceTool')->{methods};
 
-# return an Array for microservice infomations
+# return an Array for microservice infos
 getSlaverInfo()
 
 # send the request to tell gateway destory the user cache in gateway
@@ -73,5 +134,22 @@ post(String $service_name, String $url, Array $guzzle_config)
 delete(String $service_name, String $url, Array $guzzle_config) 
 put(String $service_name, String $url, Array $guzzle_config) 
 ```
-#### For Gateway: (Comming soon)
+#### For Gateway: 
+```
+ (Comming soon)
+```
+
+### Use Authorization In Microservice
+user middleware auth in your route
+```php
+$router->get('/', [ 'middleware' => 'auth' , function () use ($router) {
+    return $router->app->version();
+}]);
+```
+In Controller
+```php
+public function index (Request $request) {
+    $AUTH = $request->auth;
+}
+```
 
