@@ -103,6 +103,7 @@ $app->register(Ruima\MicroserviceTool\Provider\SlaverProvider::class);
 
 #### For Gateway: 
 ``` php
+$app->register(Illuminate\Redis\RedisServiceProvider::class);
 $app->register(Ruima\MicroserviceTool\Provider\MasterProvider::class);
 ```
 
