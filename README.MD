@@ -20,7 +20,7 @@ Or if you prefer, edit `composer.json` manually:
 ```json
 {
     "require": {
-        "ruima/microservice-tool": "^0.0.3"
+        "ruima/microservice-tool": "^0.0.5"
     }
 }
 ```
@@ -55,10 +55,36 @@ MICROSERVICE_VERSION = ''
 
 #### For Gateway:
 ```
+# The gateway use redis to cache the user auth info , you need to set the redis config
+REDIS_HOST=redis
+REDIS_PORT=6379
+REDIS_PASSWORD=your_redis_password
+
 # (Not Require) custom the microservices config list dir 
 MICROSERVICE_CONFIG_DIR = /absolute/path/to/your/config/dir
 ```
 
+### Add the service list config (```config/Microservice.json``` file)
+```json
+{
+    "base_service": {
+        "auth": {
+            "name": "micro-auth",
+            "url": "http:\/\/server.microauth",
+            "status": "active",
+            "description": ""
+        }
+    },
+    "data_service": [
+        {
+            "name": "micro-data",
+            "url": "http:\/\/server.microdata",
+            "status": "inactive",
+            "description": ""
+        }
+    ]
+}
+```
 ### Modify the bootstrap flow (```bootstrap/app.php``` file)
 #### For Microservice:
 ```php

@@ -5,6 +5,7 @@ namespace Ruima\MicroserviceTool\Controllers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client as HttpClient;
+use Laravel\Lumen\Routing\Controller as BaseController;
 use Ruima\MicroserviceTool\Console\Commands\HealthCheck;
 use Ruima\MicroserviceTool\Console\Commands\HeartBeatCheck;
 use Ruima\MicroserviceTool\Services\MicroAuthConfigService;
@@ -12,17 +13,7 @@ use Ruima\MicroserviceTool\Services\MicroserverConfigService;
 
 // use Psr\Http\Message\ServerRequestInterface;
 
-class MasterController {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-        parent::__construct();
-    }
+class MasterController extends BaseController {
 
     /**
      * @Descripttion: 网关路由分发控制器
@@ -40,7 +31,7 @@ class MasterController {
         if ($service_name === '') {
             $service_name = $service_path;
             $service_path = '/';
-            $service_path_with_query = substr_replace($request->getRequestUri(), '', 0, strlen($service_name) + 1);
+            $service_path_with_query = substr_replace($request->getRequestUri(), '', 1, strlen($service_name));
             // '/'.substr($request->getRequestUri(),strpos($request->getRequestUri(), '?', 1));
         }
         // dd([
@@ -201,13 +192,13 @@ class MasterController {
     public function healthCheck()
     {
         $conf = HealthCheck::handle();
-        return $this->response->withSuccess($conf);
+        return response()->json($conf);
     }
     
     public function heartBeatCheck()
     {
         $conf = HeartBeatCheck::handle();
-        return $this->response->withSuccess($conf);
+        return response()->json($conf);
     }
 
     /**
@@ -294,7 +285,7 @@ class MasterController {
      * @param Request $request
      * @return: 
      */
-    public function distroyAuthToken(Request $request)
+    public function distroyAuth(Request $request)
     {
         # code...
         MicroAuthConfigService::distroyAuthToken($request->input('sort_token'));

@@ -2,8 +2,9 @@
 namespace Ruima\MicroserviceTool\Console\Commands;
 
 use GuzzleHttp\Client;
+use Illuminate\Console\Command;
 
-class HeartBeat
+class HeartBeat extends Command
 {
     /**
      * The name and signature of the console command.
@@ -42,11 +43,12 @@ class HeartBeat
         $data = app('MicroserviceTool')->getSlaverInfo();
         $url = env('MICROSERVICE_GATEWAY_URL');
         $response = $http->post($url.'/register-microserver', [
-            'json' => $data
+            'json' => $data,
+            'http_errors' => false
         ]);
         $body = $response->getBody();
         file_put_contents(self::$conf_path, $body);
-        return $body;
+        return response($body, $response->getStatusCode());
         
     }
 }

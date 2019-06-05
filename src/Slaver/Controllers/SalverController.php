@@ -7,7 +7,7 @@ use Ruima\MicroserviceTool\Console\Commands\HeartBeat;
 // use Psr\Http\Message\ServerRequestInterface;
 
 class SalverController {
-    
+
     public function healthCheck()
     {
         # code...

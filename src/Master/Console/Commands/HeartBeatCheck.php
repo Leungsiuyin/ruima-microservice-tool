@@ -2,9 +2,10 @@
 namespace Ruima\MicroserviceTool\Console\Commands;
 
 use \Carbon\Carbon;
+use Illuminate\Console\Command;
 use Ruima\MicroserviceTool\Services\MicroserverConfigService;
 
-class HeartBeatCheck
+class HeartBeatCheck extends Command
 {
     /**
      * The name and signature of the console command.
@@ -55,7 +56,7 @@ class HeartBeatCheck
                 }
                 $last_beat_time = Carbon::create($value['update_at']) ;
                 $diff = $last_beat_time->diffInMinutes($last_check_time);
-                if ($diff < -5) {
+                if ($diff > 5) {
                     $value['status'] = 'inactive';
                     $value['route_list'] = [];
                 }

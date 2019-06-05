@@ -3,6 +3,7 @@
 namespace Ruima\MicroserviceTool\Services;
 
 use Illuminate\Support\Facades\Redis;
+use Carbon\Carbon;
 
 class MicroserverConfigService
 {
@@ -89,7 +90,12 @@ class MicroserverConfigService
         }
         if (!self::checkConf($conf)) {
             // TODO load Config fail
-            throw new \Exception('load Config fail');
+            // throw new \Exception('load Config fail');
+            $conf = [
+                'base_service' => [],
+                'data_service' => [],
+                'update_at' => Carbon::now(),
+            ];
         }
 
         if ($for_health_check) {
