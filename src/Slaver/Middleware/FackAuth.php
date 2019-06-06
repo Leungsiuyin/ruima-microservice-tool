@@ -13,12 +13,12 @@ class FackAuth
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public static function handle($request, Closure $next)
     {
         try {
             //code...
             $res = json_decode($request->input('user'), true);
-            if (is_null($res)) {
+            if (is_null($res) || !isset($res['roles']) || !isset($res['permissons'])) {
                 throw new \Exception('Unauthorized.');
             }
             $request->auth = $res;
