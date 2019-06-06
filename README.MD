@@ -20,7 +20,7 @@ Or if you prefer, edit `composer.json` manually:
 ```json
 {
     "require": {
-        "ruima/microservice-tool": "^0.0.7"
+        "ruima/microservice-tool": "^0.1.0"
     }
 }
 ```
@@ -68,6 +68,9 @@ REDIS_PASSWORD=your_redis_password
 
 # (Not Require) custom the microservices config list dir 
 MICROSERVICE_CONFIG_DIR = /absolute/path/to/your/config/dir
+
+# (Not Require) print how much time spend when gateway distribute request.
+MICROSERVICE_GATEWAY_TIME_LOG = true
 ```
 
 ### Modify the bootstrap flow (```bootstrap/app.php``` file)

@@ -23,6 +23,10 @@ class MasterController extends BaseController {
      */
     public function distribute(Request $request)
     {
+        if (env('MICROSERVICE_GATEWAY_TIME_LOG', false)) {
+            $START_TIME = round(microtime(true) * 1000, 0);
+            // Log::info();
+        }
         // 从请求截取需要信息
         $service_name = substr($request->path(),0,strpos($request->path(), '/'));
         $service_path = substr($request->path(),strpos($request->path(),'/', 1));
@@ -31,7 +35,7 @@ class MasterController extends BaseController {
         if ($service_name === '') {
             $service_name = $service_path;
             $service_path = '/';
-            $service_path_with_query = substr_replace($request->getRequestUri(), '', 1, strlen($service_name));
+            $service_path_with_query = substr_replace($request->getRequestUri(), '', 0, strlen($service_name) + 1);
             // '/'.substr($request->getRequestUri(),strpos($request->getRequestUri(), '?', 1));
         }
         // dd([
@@ -68,17 +72,28 @@ class MasterController extends BaseController {
             $http_config['query']['user'] = json_encode($auth_info);
         }
         
-
-        // $target = $target[array_keys($target)[0]];
-        // $service_path = preg_replace("#^".rawurldecode($target['reg'])."$#", '/\w+', $el['uri'], -1, $el['params']);;
-        // dd($target);
-
-
+        if (env('MICROSERVICE_GATEWAY_TIME_LOG', false)) {
+            $START_DISTRIBUTE_TIME = round(microtime(true) * 1000, 0);
+            // Log::info();
+        }
 
         $http = new HttpClient();
 
         $response = $http->request($request->method(), $service_url.$service_path_with_query, $http_config);
         $result = $response->getBody();
+
+        if (env('MICROSERVICE_GATEWAY_TIME_LOG', false)) {
+            $END_TIME = round(microtime(true) * 1000, 0);
+            Log::info(
+                'Request microservice: '.$service_name.';'.
+                'Request URL: '.$service_path.';'.
+                'Total: '.($END_TIME - $START_TIME).
+                'ms;'.
+                'Distrible: '.($END_TIME - $START_DISTRIBUTE_TIME).
+                'ms. '
+            );
+        }
+
         return response($result, $response->getStatusCode());
     }
 
