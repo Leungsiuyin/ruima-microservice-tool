@@ -20,7 +20,7 @@ Or if you prefer, edit `composer.json` manually:
 ```json
 {
     "require": {
-        "ruima/microservice-tool": "^0.0.6"
+        "ruima/microservice-tool": "^0.0.7"
     }
 }
 ```
@@ -43,7 +43,8 @@ MICROSERVICE_GATEWAY_URL = http://your.gateway.url
 # (Require) the name of this microservice
 MICROSERVICE_NAME = micro-data
 
-# (Require) the type of this microservice "{base service} (.e.g auth) | data"
+# (Require) the type of this microservice 
+# auth (basic microservice) | data (normal microservice)
 MICROSERVICE_TYPE = data
 
 # (Not Require) the description of this microservice
@@ -51,6 +52,11 @@ MICROSERVICE_DESCRIPTION = 数据微服务Demo
 
 # (Not Require) the version of this microservice, default return lumen's version
 MICROSERVICE_VERSION = ''
+```
+#### For Auth Microservice:
+you need to add APP_KEY
+```
+APP_KEY=The only supported ciphers are AES-128-CBC or AES-256-CBC
 ```
 
 #### For Gateway:
@@ -64,27 +70,6 @@ REDIS_PASSWORD=your_redis_password
 MICROSERVICE_CONFIG_DIR = /absolute/path/to/your/config/dir
 ```
 
-### Add the service list config (```config/Microservice.json``` file)
-```json
-{
-    "base_service": {
-        "auth": {
-            "name": "micro-auth",
-            "url": "http:\/\/server.microauth",
-            "status": "active",
-            "description": ""
-        }
-    },
-    "data_service": [
-        {
-            "name": "micro-data",
-            "url": "http:\/\/server.microdata",
-            "status": "inactive",
-            "description": ""
-        }
-    ]
-}
-```
 ### Modify the bootstrap flow (```bootstrap/app.php``` file)
 #### For Microservice:
 ```php
@@ -104,6 +89,7 @@ $app->register(Ruima\MicroserviceTool\Provider\SlaverProvider::class);
 #### For Gateway: 
 ``` php
 $app->register(Illuminate\Redis\RedisServiceProvider::class);
+
 $app->register(Ruima\MicroserviceTool\Provider\MasterProvider::class);
 ```
 
@@ -167,6 +153,18 @@ put(String $service_name, String $url, Array $guzzle_config)
 ```
 
 ### Use Authorization In Microservice
+#### In Auth microservice
+you need to add a route "GET/auth-info", return a json format user auth info.
+when other microservice need the auth info, gate way will seed a http request with token in GET method to "/auth-info", then the gateway wiil use the last 64 bits of the token as the key to cache the response in redis.
+when then auth info changed, you need to send a request "POST/distroy-auth" with body { short_token (the last 64 bits of the token) } to gateway, when the user info change. when short_token = "all", the gateway will clear all cache.
+
+In api router:
+```php
+$router->get('auth-info', 'AuthenticateController@getAuthInfo');
+```
+
+
+#### In Other microservice
 user middleware auth in your route
 ```php
 $router->get('/', [ 'middleware' => 'auth' , function () use ($router) {

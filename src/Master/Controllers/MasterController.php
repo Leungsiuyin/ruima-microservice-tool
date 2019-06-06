@@ -288,7 +288,7 @@ class MasterController extends BaseController {
     public function distroyAuth(Request $request)
     {
         # code...
-        MicroAuthConfigService::distroyAuthToken($request->input('sort_token'));
+        MicroAuthConfigService::distroyAuthToken($request->input('short_token'));
         return response('', 204);
     }
 }
