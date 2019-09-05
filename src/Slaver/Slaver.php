@@ -204,4 +204,68 @@ class Slaver {
         $target_url = $this->getServerUrl($service_name);
         return $this->request('PUT', $target_url.$url, $guzzle_config);
     }
+
+     /** 对外提供异步请求方法的基础方法
+     * @Descripttion: 
+     * @Author: LeungYin
+     * @param {type} 
+     * @return: 
+     */
+    private function requestAsync(String $method, String $url, Array $guzzle_config)
+    {
+        # code...
+        $http = new Client();
+        $guzzle_config['http_errors'] = false;
+        $response = $http->request($method, $url, $guzzle_config);
+        return response($response->getBody(), $response->getStatusCode());
+    }
+
+    /**
+     * @Descripttion: 对外提供getAsync接口，传入目标微服务名，请求路由，设置参数。由于底层使用Guzzle，设置参数可参考Guzzle文档。
+     * @Author: LeungYin
+     * @param {type} 
+     * @return: 
+     */
+    public function getAsync(String $service_name, String $url = '/', Array $guzzle_config = [])
+    {
+        # code...
+        $target_url = $this->getServerUrl($service_name);
+        return $this->requestAsync('GET', $target_url.$url, $guzzle_config);
+    }
+
+    /**
+     * @Descripttion: 对外提供postAsync接口，传入目标微服务名，请求路由，设置参数。由于底层使用Guzzle，设置参数可参考Guzzle文档。
+     * @Author: LeungYin
+     * @param {type} 
+     * @return: 
+     */
+    public function postAsync(String $service_name, String $url = '/', Array $guzzle_config = [])
+    {
+        $target_url = $this->getServerUrl($service_name);
+        return $this->requestAsync('POST', $target_url.$url, $guzzle_config);
+    }
+
+    /**
+     * @Descripttion: 对外提供deleteAsync接口，传入目标微服务名，请求路由，设置参数。由于底层使用Guzzle，设置参数可参考Guzzle文档。
+     * @Author: LeungYin
+     * @param {type} 
+     * @return: 
+     */
+    public function deleteAsync(String $service_name, String $url = '/', Array $guzzle_config = [])
+    {
+        $target_url = $this->getServerUrl($service_name);
+        return $this->requestAsync("DELETE", $target_url.$url, $guzzle_config);
+    }
+
+    /**
+     * @Descripttion: 对外提供putAsync接口，传入目标微服务名，请求路由，设置参数。由于底层使用Guzzle，设置参数可参考Guzzle文档。
+     * @Author: LeungYin
+     * @param {type} 
+     * @return: 
+     */
+    public function putAsync(String $service_name, String $url = '/', Array $guzzle_config = [])
+    {
+        $target_url = $this->getServerUrl($service_name);
+        return $this->requestAsync('PUT', $target_url.$url, $guzzle_config);
+    }
 }

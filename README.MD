@@ -8,7 +8,7 @@ The gateway will cache the user auth info (base info, roles info, premissions in
 * Automatically distribute the requset to target microservice
 * Use redis to cache the user auth info in gateway
 * Authentication in gateway
-* Api permission guard in microservice middle ware
+* Api permission guard in microservice middleware
 
 ## Dependencies
 * PHP >= 7.1.3
